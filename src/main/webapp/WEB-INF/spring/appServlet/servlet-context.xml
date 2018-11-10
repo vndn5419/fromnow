@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+	
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<annotation-driven />
+
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
+	<resources mapping="/resources/**" location="/resources/" />
+	<resources mapping="/assets/**" location="/resources/assets/" />
+	<resources mapping="/bootstrap/**" location="/resources/bootstrap/" />
+	
+	
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
+	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/WEB-INF/views/" />
+		<beans:property name="suffix" value=".jsp" />
+	</beans:bean>
+	
+	<!-- 인터셉터 클래스를 빈으로 등록. -->
+
+	<beans:bean id = "LoginIntercepter" class="global.sesoc.intercepter.LoginIntercepter"/>
+	<beans:bean id = "LoginedIntercepter" class="global.sesoc.intercepter.LoginedIntercepter"/>
+	<beans:bean id = "AdminIntercepter" class="global.sesoc.intercepter.AdminIntercepter"/>
+	<beans:bean id = "CompanyIntercepter" class="global.sesoc.intercepter.CompanyIntercepter"/>
+	<beans:bean id = "MemberIntercepter" class="global.sesoc.intercepter.MemberIntercepter"/>
+	
+	<interceptors>
+	
+	    <interceptor>
+	         <mapping path="/memberSignIn"/>
+	         <mapping path="/signIn"/>
+	         <mapping path ="/companySignIn"/>
+	         <mapping path ="/logIn"/>
+	         <beans:ref bean ="LoginIntercepter"/>
+	    </interceptor>
+	
+	    <interceptor>
+	         <mapping path="/adminProjects"/>
+	         <mapping path="/anotherdetailedProject"/>
+	         <beans:ref bean ="AdminIntercepter"/>
+	    </interceptor>
+	     
+	    <interceptor>
+	         <mapping path="/companyProfile"/>
+	         <mapping path="/createProject"/>
+	         <mapping path="/getReport"/>
+	         <mapping path="/buyerList"/>
+	         <mapping path="/myProjectsList"/>
+	         <beans:ref bean ="CompanyIntercepter"/>
+	    </interceptor>
+	    
+	    <interceptor>
+	         <mapping path="/favoritePage"/>
+	         <mapping path="/memberProfile"/>
+	         <mapping path="/cartPage"/>
+	         <mapping path="/orderComplete"/>
+	         <mapping path="/paymentPage"/>
+	         <mapping path="/orderList"/>
+	         <mapping path="/commonOrderInfo"/>
+	         <mapping path="/myCoupon"/>
+	         <beans:ref bean ="MemberIntercepter"/>
+	    </interceptor>
+		
+		   <interceptor>
+		   <mapping path="/favoritePage"/>
+	         <mapping path="/logOut"/>
+	         <mapping path="/memberProfile"/>
+	         <mapping path="/companyProfile"/>
+	         <mapping path="/createProject"/>
+	         <mapping path="/adminProjects"/>
+	         <mapping path ="/detailedProject1"/>
+	         <mapping path ="/myProjectsList"/>
+	         <mapping path ="/anotherdetailedProject"/>
+	         <mapping path ="/getReport"/>
+	         <mapping path ="/orderComplete"/>
+	         <mapping path ="/paymentPage"/>
+	         <mapping path ="/orderList"/>
+	         <mapping path ="/commonOrderInfo"/>
+	         <mapping path ="/buyerList"/>
+	         <mapping path ="/myCoupon"/>
+	         <beans:ref bean ="LoginedIntercepter"/>
+	    </interceptor>
+	       
+	</interceptors>
+
+	
+	<context:component-scan base-package="global.sesoc" />
+	
+	
+	
+</beans:beans>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- SQL -->
+<mapper namespace="global.sesoc.dao.ReplyMapper">
+
+ <select id="replyAll" parameterType="Reply" resultType="Reply">
+ 		SELECT COUNT(*) OVER () count, r.*
+		FROM reply r
+		WHERE project_num = #{project_num} order by reply_num asc
+ </select>
+ 
+  <insert id="insertReply" parameterType="Reply">
+ 		insert into reply values(reply_seq.nextval, #{reply_content}, #{userid}, #{project_num}, sysdate)
+ </insert>
+  		
+ </mapper>
+    

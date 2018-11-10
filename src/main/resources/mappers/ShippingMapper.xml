@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- SQL -->
+<mapper namespace="global.sesoc.dao.ShippingMapper">
+	
+	
+	<insert id="insertShipping" parameterType="Shipping">
+		insert into shipping
+		(
+			shipping_num
+			, project_num
+			, shipping_country
+			, shipping_price
+		)
+		values
+		(
+			shipping_seq.nextval
+			,#{project_num}
+			,#{shipping_country}
+			,#{shipping_price}
+		)
+	</insert>
+	
+	<select id="selectShipping" parameterType="int" resultType="Shipping">
+  	select * from shipping where project_num = #{project_num}
+  	</select>
+  	
+</mapper>

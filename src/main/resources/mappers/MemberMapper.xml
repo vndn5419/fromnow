@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- SQL -->
+<mapper namespace="global.sesoc.dao.MemberMapper">
+
+
+	<insert id="insertMember" parameterType="WebMember">
+		insert into webmember
+		(userid, firstname, userpwd, gender, lastname, birthday, phone, email, zipcode, country, province, city, address1, address2
+		<if test="image!=null">
+		,image
+		</if>
+		<if test="hobby!=null">
+		,hobby
+		</if>
+		)
+		values
+		(#{userid}, #{firstname}, #{userpwd}, #{gender},#{lastname}, #{birthday}, #{phone}, #{email}
+		, #{zipcode}, #{country}, #{province}, #{city}, #{address1}, #{address2}
+		<if test="image!=null">
+		,#{image}
+		</if>
+		<if test="hobby!=null">
+		,#{hobby}
+		</if>
+		)
+	</insert>
+	
+	<select id="selectOne" resultType="WebMember" parameterType="WebMember">
+	select userid, firstname, userpwd, gender, lastname, to_char(birthday,'yyyy-MM-dd') as birthday, phone
+	       , email, zipcode, country, province, city, address1, address2, hobby, image  from webmember
+	where userid=#{userid}
+	<if test="userpwd!=null">
+	and userpwd=#{userpwd}
+	</if>
+	</select>
+	
+	<select id="selectOneCompany" resultType="Company" parameterType="Company">
+	select *
+	from company
+	where co_id=#{co_id}
+	<if test="co_pwd!=null">
+	and co_pwd=#{co_pwd}
+	</if>
+	</select>
+	
+	<insert id="insertCompany" parameterType="Company">
+		insert into company
+		(co_id, co_name,co_ceo_firstname, co_pwd, co_ceo_lastname, co_phone, co_email, co_website, co_zipcode, co_country, co_province, co_city
+		,co_address1, co_address2
+		<if test="co_image!=null">
+		, co_image
+		</if>
+		)
+		values
+		( #{co_id},#{co_name}, #{co_ceo_firstname}, #{co_pwd}, #{co_ceo_lastname}, #{co_phone}, #{co_email}, #{co_website}
+		,#{co_zipcode} , #{co_country}, #{co_province} , #{co_city}, #{co_address1}, #{co_address2}
+		<if test="co_image!=null">
+		, #{co_image}
+		</if>
+		)
+	</insert>
+	
+	<select id="idCheck" parameterType="WebMember" resultType="WebMember">
+	    select userid from ((select userid as userid from webmember)
+	    UNION
+	    (select co_id as userid from company))
+	    where userid=#{userid}
+	</select>
+	
+	<update id="memberUpdate" parameterType="WebMember">
+	   UPDATE webmember
+	   SET
+       firstname=#{firstname},userpwd=#{userpwd},gender=#{gender},lastname=#{lastname} ,birthday=#{birthday}, phone=#{phone}, email=#{email}
+       ,zipcode=#{zipcode} , country=#{country} , province=#{province} , city=#{city} , address1=#{address1} , address2=#{address2}, iamge=#{iamge}
+	   WHERE userid=#{userid}
+	</update>
+	
+	<update id="companyUpdate" parameterType="Company">
+	   UPDATE company
+	   SET
+       co_name=#{co_name},co_ceo_firstname=#{co_ceo_firstname},co_pwd=#{co_pwd},co_ceo_lastname=#{co_ceo_lastname}, co_phone=#{co_phone}, co_email=#{co_email}, co_image=#{co_image}
+       ,co_zipcode=#{co_zipcode} , co_country=#{co_country} , co_province=#{co_province} , co_city=#{co_city} , co_address1=#{co_address1} , co_address2=#{co_address2},co_website=#{co_website}
+	   WHERE co_id=#{co_id}
+	</update>
+
+</mapper>

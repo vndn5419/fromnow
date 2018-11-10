@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- SQL -->
+<mapper namespace="global.sesoc.dao.FavoriteMapper">
+
+	<delete id="favoriteDelete" parameterType="Favorites">
+		delete from favorites
+		where userid=#{userid} and project_num=#{project_num}
+	</delete>
+
+	<insert id="favoriteInsert" parameterType="Favorites">
+		insert into favorites
+		(
+		userid
+		, project_num
+		)
+		values
+		(
+		#{userid}
+		,#{project_num}
+		)
+	</insert>
+	
+	<select id="favoriteSelect" resultType="Favorites" parameterType="Favorites">
+	select 
+        userid
+        ,project_num
+        from
+            favorites
+		where userid=#{userid}
+	</select>
+	
+	<select id="selectOne" resultType="Favorites" parameterType="Favorites">
+	select 
+        userid
+        ,project_num
+        from
+            favorites
+		where userid=#{userid} and project_num = #{project_num}
+	</select>
+
+</mapper>
+    

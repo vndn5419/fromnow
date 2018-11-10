@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- SQL -->
+<mapper namespace="global.sesoc.dao.SaleMapper">
+
+	<insert id="insertSale" parameterType="Sale">
+		insert into sale
+		(
+		sale_num
+		,sale_totalprice
+		,sale_firstname
+		,sale_lastname
+		,sale_date
+		,project_num
+		,sale_amount
+		,sale_zipcode
+		,sale_country
+		,sale_city
+		,sale_address1
+		,sale_address2
+		,sale_phone
+		,sale_email
+		,userid
+		)
+		values
+		(
+		sale_seq.nextval
+		,#{sale_totalprice}
+		,#{sale_firstname}
+		,#{sale_lastname}
+		,sysdate
+		,#{project_num}
+		,#{sale_amount}
+		,#{sale_zipcode}
+		,#{sale_country}
+		,#{sale_city}
+		,#{sale_address1}
+		,#{sale_address2}
+		,#{sale_phone}
+		,#{sale_email}
+		,#{userid}
+		)
+
+
+	</insert>
+
+	<select id="saleSelect" parameterType="string" resultType="Sale">
+		select
+		*
+		from
+		sale
+		where
+		userid=#{userid}
+	</select>
+
+	<select id="soldByCountries" parameterType="int" resultType="Sale">
+		select
+		sum(sale_totalprice) sale_totalprice,
+		country userid,
+		count(country)
+		sale_amount
+		from webmember, sale
+		where webmember.userid = sale.userid
+		and project_num=#{project_num}
+		group by country
+	</select>
+
+	<select id="soldByGender" resultType="Sale">
+		select
+		gender userid,
+		count(gender) sale_amount
+		from
+		webmember, sale
+		where webmember.userid =
+		sale.userid and project_num=#{project_num}
+		group by gender
+		order by
+		gender
+	</select>
+
+	<select id="soldByAge" resultType="Sale">
+		select
+		trunc(trunc(trunc(sale_date-birthday)/365),-1) sale_date,
+		count(trunc(trunc(trunc(sysdate-birthday)/365),-1)) sale_amount
+		from
+		webmember, sale
+		where webmember.userid = sale.userid and
+		project_num=#{project_num}
+		group by
+		trunc(trunc(trunc(sale_date-birthday)/365),-1)
+		order by sale_date
+
+	</select>
+
+	<select id="soldByDate" resultType="Sale">
+		select
+		sum(sale_totalprice)
+		sale_totalprice,
+		To_char(sale_date, 'YY-mm') sale_date,
+		count(To_char(sale_date, 'YY-mm')) sale_amount
+		from
+		sale where
+		project_num = #{project_num}
+		group by
+		To_char(sale_date, 'YY-mm')
+		order
+		by
+		sale_date
+	</select>
+
+	<select id="soldPerPerson" resultType="Sale">
+		select
+		trunc((sum(sale_totalprice)/count(sale_num)),2) sale_totalprice from
+		sale where project_num= #{project_num}
+	</select>
+
+	<select id="soldByDateInCountry" resultType="Sale">
+		select
+		sum(sale_totalprice) sale_totalprice,
+		To_char(sale_date, 'YY-mm')
+		sale_date,
+		count(To_char(sale_date, 'YY-mm')) sale_amount
+		from
+		sale,
+		webmember
+		where
+		sale.userid = webmember.userid
+		and project_num =
+		#{project_num}
+		and country = #{sale_country}
+		group by
+		To_char(sale_date,
+		'YY-mm')
+		order by sale_date
+	</select>
+
+	<select id="soldByAgeInCountry" resultType="Sale">
+		select
+		trunc(trunc(trunc(sale_date-birthday)/365),-1) sale_date,
+		count(trunc(trunc(trunc(sysdate-birthday)/365),-1)) sale_amount
+		from
+		webmember, sale
+		where
+		webmember.userid = sale.userid and
+		project_num=#{project_num}
+		and
+		country =#{sale_country}
+		group by
+		trunc(trunc(trunc(sale_date-birthday)/365),-1)
+		order by sale_date
+	</select>
+
+	<select id="soldPerPersonInCountry" resultType="Sale">
+		select
+		trunc((sum(sale_totalprice)/count(sale_num)),2) sale_totalprice from
+		sale, webmember where sale.userid = webmember.userid and project_num=
+		#{project_num} and country=#{sale_country}
+	</select>
+
+	<select id="soldByGenderInCountry" resultType="Sale">
+		select
+		gender
+		userid,
+		count(gender) sale_amount
+		from
+		webmember, sale
+		where
+		webmember.userid = sale.userid and project_num=#{project_num} and
+		country =#{sale_country}
+		group by gender
+		order by gender
+	</select>
+
+	<select id="viewedByGender" resultType="Sale">
+
+		select gender userid,
+		count(gender) sale_amount from webmember, viewer where
+		webmember.userid = viewer.userid and project_num= #{project_num} group
+		by gender
+	</select>
+
+	<select id="viewedByAge" resultType="Sale">
+		select
+		trunc(trunc(trunc(viewer_date-birthday)/365),-1) sale_date,
+		count(trunc(trunc(trunc(viewer_date-birthday)/365),-1)) sale_amount
+		from webmember, viewer where webmember.userid = viewer.userid and
+		project_num=#{project_num} group by
+		trunc(trunc(trunc(viewer_date-birthday)/365),-1)
+		order by sale_date asc
+	</select>
+
+	<select id="viewedByCountries" resultType="Sale">
+		select
+		viewer_countryinfo userid, count(viewer_countryinfo) sale_amount from
+		viewer where project_num=#{project_num} and userid is not null group
+		by viewer_countryinfo
+	</select>
+
+	<select id="viewedByDate" resultType="Sale">
+		select To_char(viewer_date,
+		'YY-mm') sale_date, count(To_char(viewer_date,
+		'YY-mm')) sale_amount
+		from viewer where project_num = #{project_num}
+		group by
+		To_char(viewer_date, 'YY-mm')
+		order by sale_date asc
+	</select>
+
+	<select id="viewedByGenderInCountry" resultType="Sale">
+		select gender
+		userid, count(gender) sale_amount from webmember, viewer where
+		webmember.userid = viewer.userid and project_num= #{project_num} and
+		viewer_countryinfo = #{sale_country} group by gender
+	</select>
+
+	<select id="viewedByAgeInCountry" resultType="Sale">
+		select
+		trunc(trunc(trunc(viewer_date-birthday)/365),-1) sale_date,
+		count(trunc(trunc(trunc(viewer_date-birthday)/365),-1)) sale_amount
+		from webmember, viewer where webmember.userid = viewer.userid and
+		project_num=#{project_num} and viewer_countryinfo = #{sale_country}
+		group by trunc(trunc(trunc(viewer_date-birthday)/365),-1)
+		order by sale_date asc
+	</select>
+
+	<select id="viewedByDateInCountry" resultType="Sale">
+		select
+		To_char(viewer_date, 'YY-mm') sale_date, count(To_char(viewer_date,
+		'YY-mm')) sale_amount from viewer where project_num = #{project_num}
+		and userid is not null and viewer_countryinfo = #{sale_country} group
+		by To_char(viewer_date, 'YY-mm')
+		order by sale_date asc
+	</select>
+
+	<select id="selectOneOrder" parameterType="int"
+resultType="Sale">
+		select * from sale where sale_num = #{sale_num}
+	</select>
+
+    <select id="selectCoupon" parameterType="Sale" resultType="Coupon">
+    	select * from coupon where userid=#{userid} and coupon_used='no'and project_num=#{project_num}
+    </select>
+
+	<select id="buyerSelect" resultType="Sale">
+		select
+		*
+		from
+		sale
+		where project_num=#{project_num}
+	</select>
+	
+    <select id="myCouponSelect" parameterType="String" resultType="MyCouponList">
+    select c.coupon_num,c.coupon_discountrate,c.project_num,c.userid,c.coupon_used, to_char(c.coupon_date,'YYYY-MM-DD') as coupon_date, c.coupon_code,p.project_title 
+    from coupon c,project p where userid=#{userid} and coupon_used='no' and c.project_num=p.project_num
+    </select>
+    
+    <update id="updateCoupon" parameterType="int">
+    update coupon set coupon_used='yes' where coupon_num=#{coupon_num}
+    </update>	
+    
+    <select id="InvestorAnalysis" resultType="Analysis" parameterType="int">
+		select a.country best_country, b.gender best_gender, c.sale_date best_age, d.sale_date best_month, e.sale_totalprice best_price from(
+		    select country from(
+		   select
+		      country, 
+		      count(country) sale_amount
+		   from webmember, sale 
+		   where webmember.userid = sale.userid and project_num=#{project_num} 
+		   group by country order by sale_amount desc)
+		   where rownum = 1)a, (select gender from(
+		   select 
+				gender, 
+				count(gender) sale_amount 
+			from 
+				webmember, sale 
+			where webmember.userid = sale.userid and project_num=#{project_num}  
+			group by gender
+			order by sale_amount desc)
+		    where rownum =1) b, 
+		    (select sale_date from(
+		    select 
+				trunc(trunc(trunc(sale_date-birthday)/365),-1) sale_date, 
+				count(trunc(trunc(trunc(sysdate-birthday)/365),-1)) sale_amount 
+			from webmember, sale 
+			where webmember.userid = sale.userid and project_num=#{project_num}  
+			group by trunc(trunc(trunc(sale_date-birthday)/365),-1)
+			order by sale_amount desc)
+		    where rownum = 1) c, (select sale_date from(
+		    select  
+				To_char(sale_date, 'YYYY MONTH') sale_date, 
+				count(To_char(sale_date, 'YY-mm')) sale_amount 
+			from 
+				sale where project_num = #{project_num}   
+			group by 
+				To_char(sale_date, 'YYYY MONTH') 
+			order by 
+				sale_amount)
+		        where rownum = 1) d, 
+		        (select trunc((sum(sale_totalprice)/count(sale_num)),2) sale_totalprice from sale where project_num=#{project_num} ) e
+	</select>
+
+	<select id="PotentialInvestorAnalysis" resultType="Analysis" parameterType="int">
+	select a.country best_country, b.gender best_gender, c.sale_date best_age from(
+	    select country from (
+	        select
+			viewer_countryinfo country, count(viewer_countryinfo) sale_amount from
+			viewer where project_num=#{project_num}   and userid is not null group
+			by viewer_countryinfo order by sale_amount desc) where rownum =1)a, (        select gender from (
+	        select gender,
+			count(gender) sale_amount from webmember, viewer where
+			webmember.userid = viewer.userid and project_num= #{project_num}   group
+			by gender order by sale_amount desc) where rownum =1) b, 
+	    (select sale_date from
+	        (select
+			trunc(trunc(trunc(viewer_date-birthday)/365),-1) sale_date,
+			count(trunc(trunc(trunc(viewer_date-birthday)/365),-1)) sale_amount
+			from webmember, viewer where webmember.userid = viewer.userid and
+			project_num=#{project_num}   group by
+			trunc(trunc(trunc(viewer_date-birthday)/365),-1)
+	        order by sale_amount desc)
+	        where rownum =1) c
+	</select>
+	
+</mapper>

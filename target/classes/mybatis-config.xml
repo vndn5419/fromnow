@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+ 	<typeAliases>
+		<typeAlias type="global.sesoc.vo.Project" alias="Project" />
+		<typeAlias type="global.sesoc.vo.Reply" alias="Reply" />
+		<typeAlias type="global.sesoc.vo.Rereply" alias="Rereply" />
+		<typeAlias type="global.sesoc.vo.WebMember" alias="WebMember" />
+		<typeAlias type="global.sesoc.vo.Company" alias="Company" />
+		<typeAlias type="global.sesoc.vo.Shipping" alias="Shipping" />
+		<typeAlias type="global.sesoc.vo.Sale" alias="Sale" />
+		<typeAlias type="global.sesoc.vo.Favorites" alias="Favorites" />
+		<typeAlias type="global.sesoc.vo.Viewer" alias="Viewer" />
+		<typeAlias type="global.sesoc.vo.Coupon" alias="Coupon" />
+		<typeAlias type="global.sesoc.vo.MyCouponList" alias="MyCouponList" />
+		<typeAlias type="global.sesoc.vo.Analysis" alias="Analysis" />
+		
+	</typeAliases>
+	<mappers>
+		<mapper resource="mappers/projectMapper.xml" />
+		<mapper resource="mappers/replyMapper.xml" />
+		<mapper resource="mappers/rereplyMapper.xml" />
+		<mapper resource="mappers/MemberMapper.xml" />
+		<mapper resource="mappers/ShippingMapper.xml" />
+		<mapper resource="mappers/SaleMapper.xml" />
+		<mapper resource="mappers/FavoriteMapper.xml" />
+	</mappers>
+	
+</configuration>

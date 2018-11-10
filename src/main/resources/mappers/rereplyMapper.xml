@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- SQL -->
+<mapper namespace="global.sesoc.dao.RereplyMapper">
+
+ <select id="rereplyAll" parameterType="Rereply" resultType="Rereply">
+ 		SELECT *
+		FROM rereply
+		WHERE reply_num = #{reply_num}
+ </select>
+ 
+  <insert id="insertRereply" parameterType="Rereply">
+ 		insert into rereply values(rereply_seq.nextval, #{rereply_content}, #{reply_num}, #{project_num}, #{co_id}, sysdate)
+ </insert>
+  		
+ </mapper>
+    

@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- SQL -->
+<mapper namespace="global.sesoc.dao.ProjectMapper">
+
+	<select id="selectAll" parameterType="Project"
+		resultType="Project">
+		select * from(
+        select rownum rnum, project_num,reward_title, project_title, project_content, project_nowfundprice,
+		project_goalfundprice,
+		project_startdate, project_goaldate,
+		project_hitcount, project_category, project_video, co_id,
+		project_coverImage,
+		project_location, reward_price, reward_description, reward_deliverydate,
+		project_checked from(
+         select
+		project_num, reward_title, project_title, project_content, project_nowfundprice,
+		project_goalfundprice,
+		project_startdate, To_char(project_goaldate, 'MM-dd') project_goaldate,
+		project_hitcount, project_category, project_video, co_id,
+		project_coverImage,
+		project_location, reward_price, reward_description, reward_deliverydate,
+		project_checked
+		from project
+		where
+		project_goaldate>sysdate
+		and
+		project_checked = 'checked'
+		<if test="project_category != null">
+			and project_category=#{project_category}
+		</if>
+		<if test="project_title !=null">
+			<bind name="search" value="'%' + project_title + '%'" />
+			and ( lower(project_title) like #{search} or lower(project_title)
+			like #{search})
+		</if>
+		<if test="project_content != null">
+			order by
+			<choose>
+				<when test="project_content eq 'Newest'">
+					project_startdate desc
+				</when>
+				<when test="project_content eq 'Popularity'">
+					project_hitcount desc
+				</when>
+				<when test="project_content eq 'End Date'">
+					project_goaldate desc
+				</when>
+				<when test="project_content eq 'Most Funded'">
+					project_nowfundprice desc
+				</when>
+			</choose>
+			))
+		</if>
+		where rnum between (#{project_num}+1) and (#{project_num}+9)
+
+	</select>
+
+	<select id="selectOneproject" parameterType="int"
+		resultType="Project">
+		select project_num, reward_title, project_title, project_content,
+		project_nowfundprice, project_goalfundprice,
+		project_startdate, To_char(project_goaldate, 'yyyy/MM/dd') project_goaldate,
+		project_hitcount, project_category, project_video, co_id,
+		project_coverImage
+		,project_location, reward_price, reward_description, reward_deliverydate,
+		project_checked
+		from project where project_num = #{project_num}
+	</select>
+
+	<insert id="insertProject" parameterType="Project">
+		<selectKey keyProperty="project_num" resultType="int" order="BEFORE">
+		SELECT project_seq.nextval From DUAL
+		</selectKey>
+		insert into
+		project
+		values(
+		#{project_num}
+		, #{project_title}
+		, #{project_coverImage}
+		, #{project_content}
+		, 0
+		, #{project_goalfundprice}
+		, to_date(#{project_startdate}, 'YYYY-MM-DD')
+		, to_date(#{project_goaldate}, 'YYYY-MM-DD')
+		, 0
+		, #{project_location}
+		, #{project_category}
+		, #{project_video}
+		, #{reward_title}
+		, #{reward_price}
+		, #{reward_description}
+		, to_date(#{reward_deliverydate}, 'YYYY-MM-DD')
+		, #{project_checked}
+		, #{co_id}
+		)
+	</insert>
+
+
+	<select id="myProjectsList" resultType="Project">
+		select * from project where co_id=#{co_id}
+	</select>
+
+	<insert id="insertViewer" parameterType="Viewer">
+		insert into viewer
+		(
+		viewer_num
+		, viewer_countryinfo
+		, viewer_cityinfo
+		, viewer_ipinfo
+		, userid
+		, project_num
+		, viewer_date
+		)
+		values
+		(
+		view_seq.nextval
+		,#{viewer_countryinfo}
+		,#{viewer_cityinfo}
+		,#{viewer_ipinfo}
+		,#{userid}
+		,#{project_num}
+		,sysdate
+		)
+
+	</insert>
+
+	<select id="adminSelectAll" parameterType="Project"
+		resultType="Project">
+		select project_num, reward_title, project_title, project_content,
+		project_nowfundprice, project_goalfundprice,
+		project_startdate, To_char(project_goaldate, 'YYYY-MM-dd') project_goaldate,
+		project_hitcount, project_category, project_video, co_id,
+		project_coverImage
+		,project_location, reward_price, reward_description, reward_deliverydate,
+		project_checked 
+		from project where project_checked = 'unchecked' order by
+		PROJECT_STARTDATE
+	</select>
+
+
+	<select id="recommendList" parameterType="WebMember" resultType="Project">
+		select project.project_num, project.reward_title, project.project_title, project.project_content, project.project_nowfundprice,
+		project.project_goalfundprice,
+		project.project_startdate, To_char(project.project_goaldate, 'MM-dd') project_goaldate,
+		project.project_hitcount, project.project_category, project.project_video, project.co_id,
+		project.project_coverImage,
+		project.project_location, project.reward_price, project.reward_description, project.reward_deliverydate,
+		project.project_checked from(
+		select abc.project_num from (select * from(
+		SELECT
+		project.*
+		FROM
+		project
+		)
+		where project_category in
+		(select * from (
+		select regexp_substr(a.mydatas,'[^, ]+', 1, rownum) mydata
+		from (select hobby mydatas from webmember where userid = #{userid}) a
+		connect by <![CDATA[ROWNUM <= length(regexp_replace(mydatas,'[^,]+')) + 1]]>
+		) where mydata is not null)) abc, sale where abc.project_num =
+		sale.project_num group by abc.project_num order by
+		count(abc.project_num) desc) ab, project
+		where ab.project_num=project.project_num and rownum between 1 and 8
+	</select>
+
+	<select id="bestSellerList" resultType="Project">
+		select project_num, reward_title, project_title, project_content, project_nowfundprice,
+		project_goalfundprice,
+		project_startdate, To_char(project_goaldate, 'MM-dd') project_goaldate,
+		project_hitcount, project_category, project_video, co_id,
+		project_coverImage,
+		project_location, reward_price, reward_description, reward_deliverydate,
+		project_checked from (select rownum rnum, project.* from (select count(project_num)
+		count from sale group by project_num order by count(project_num))
+		sale, project order by count) where rnum between 1 and 8
+	</select>
+
+	<update id="updateChecked" parameterType="int">
+		update project
+		set project_checked = 'checked'
+		where project_num=#{project_num}
+	</update>
+
+	<insert id="insertCoupon" parameterType="Coupon">
+		insert into coupon
+		(
+		coupon_num,
+		coupon_discountrate,
+		project_num,
+		coupon_code,
+		coupon_date
+		)
+		values
+		(
+		coupon_seq.nextval
+		,#{coupon_discountrate}
+		,#{project_num}
+		,#{coupon_code}
+		,sysdate
+		)
+	</insert>
+
+	<select id="selectAllCoupon" parameterType="int"
+		resultType="Coupon">
+		select * from coupon where project_num = #{project_num} and userid is null
+	</select>
+
+	<update id="updateUserCoupon" parameterType="Coupon">
+		update coupon set userid = #{userid} where coupon_num = #{coupon_num}
+	</update>
+	
+	<select id="selectTitle" resultType="Project">
+   		select * from project
+   	</select>
+   	
+   	<update id="purchasedProject" parameterType="Sale">
+   		update project set project_nowfundprice = project_nowfundprice + #{sale_totalprice} where project_num = #{project_num}
+   	
+   	</update>
+	
+</mapper>
+    
